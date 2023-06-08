@@ -1,0 +1,127 @@
+###########################################################
+#                                                         #
+# EDIT THIS CONFIGURATION FILE TO MATCH YOUR ENVIRONMENT  #
+# AND NEEDS.                                              #
+#                                                         #
+###########################################################
+
+
+# Define api username used for connecting to VRM portal
+api_username: name@email.com
+
+
+# Define api password used for connecting to VRM portal
+api_password: p4ssW0rd
+
+
+# Installation id, found here: https://vrm.victronenergy.com/installation/<installaltion_id>/advanced
+# installation_id: 123456
+# Diagnostics URL - all required runtime data stored here
+diags_url: 'https://vrmapi.victronenergy.com/v2/installations/123456/diagnostics?count=1000'
+
+
+# Login URL - used for api login to portal
+login_url: https://vrmapi.victronenergy.com/v2/auth/login
+
+
+# Logout URL - used for api logout from portal
+logout_url: https://vrmapi.victronenergy.com/v2/auth/logout
+
+
+
+
+# Logging file name for general logs
+log_file: /tmp/pv_heater_optimizer.log
+
+# Log file size in bytes
+log_file_size: 10000000
+
+
+# Logging file name for each day hourly forecast
+# self.fcastHourlyFile = "/tmp/pv_watts_hourly"
+day_hourly_fcast: /tmp/pv_watts_hourly
+
+# Api forecast url, provide your latitude, longigude, panel vertical angle (declination),
+# looking south angle and kWp value
+#
+# Place latitude, can be either positive or negative float
+# latitude: '39.384602'
+#
+# Place longitude, can be either positive or negative float
+# longitude: '11.349369'
+#
+# vertical angle of panels installation or roof angle
+# declination: '37'
+#
+# 0 is south, +180 is west, -180 is east
+# looking_south: '20'
+#
+# kWp value in pannels installation
+# kwp: '4.4'
+#
+# Assembled URL for weather forecast api. In this free version it can be accessed 12 times
+# then a response error '429 - too many requests' is got and need to wait cca 2 hours for next try.
+# fcast_url: "https://api.forecast.solar/estimate/watthours/${latitude}/${longitude}/${declination}/${loooking_south}/${kwp}"
+fcast_url: "https://api.forecast.solar/estimate/watthours/39.384602/11.349369/37/20/4.4"
+
+# self.fcastHeaders = {"Accept": "application/json"}
+# Do not change this.
+fcast_headers: {"Accept": "application/json"}
+
+
+# self.fcastTimePull = "07:00:00"
+# Day time when the forecast data are pulled for the day and stored into ${day_hourly_fcast} file.
+fcast_time_pull: "07:00:00"
+
+
+# self.fcastDiff = 100     # should be cca 700 watts
+# Represents current (Forecasted Watts - PV Charger Watts).
+# When above this value, the heater is turned on. Eg. 700 Watts.
+fcast_diff: 10
+
+
+# self.sleepTimer = 3
+# Run the main loop each number of seconds
+# sleep_timer: 30
+sleep_timer: 3
+
+
+# self.minBattery = 40     # should be 98+
+# The minimum battery level in percent which needs to be met in order for the heater to turn on.
+# Necessary-insufficient condition.
+min_battery: 95
+
+
+# self.minDayHour = 9
+# self.maxDayHour = 18
+# Time frame between the two hours in a day when it is considering daylight.
+# Necessary-insufficient condition.
+min_day_hour: 9
+max_day_hour: 18
+
+
+# self.maxGridDraw = 40
+# Max Watts allowed to be drawn from the grid, or the heating is turned off
+max_grid_draw: 80
+
+
+# self.maxBatteryDraw = 100
+# When the heater is on, this is the max Watts allowed to be drawn from the battery,
+# or the heating power is decreased by 10%
+max_battery_discharge: 100
+
+
+# Based on this value heating power is increased or decreased by given %.
+adjust_value: 10
+
+
+# self.tolerateRange = 100
+# Represents current (Forecasted Watts - PV Charger Watts).
+# When the heater is on, this is the max Watts allowed with no action.
+# When the actual is above the tolerance, heating power is increased by the ${adjust_value}%.
+tolerance: 100
+
+
+# self.pwrPcnt = 50
+# Initial percentage when the heater is turned on.
+power_percent: 50
