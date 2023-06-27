@@ -4,9 +4,11 @@ import logging
 import yaml
 from munch import Munch
 from Lib.DataControl import FileHandler
+from Lib.DataControl import parseConfig
 import os
 
-with FileHandler(os.environ['CONFIG_FILE'], "r") as cf:
+cfgFile = parseConfig(fileOnly=True)
+with FileHandler(cfgFile, "r") as cf:
     cfg = Munch(yaml.safe_load(cf))
 
 path = cfg.log_file

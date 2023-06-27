@@ -159,7 +159,7 @@ class FileHandler:
         if self.file:
             self.file.close()
 
-def parseConfig():
+def parseConfig(fileOnly=False):
     parser = argparse.ArgumentParser()
     parser.add_argument(\
                         "-c",\
@@ -173,5 +173,7 @@ def parseConfig():
     print(f"args: { args.config }")
     cfgFile = args.config
     print(cfgFile)
+    if fileOnly:
+        return cfgFile
     vars = Variables(cfgFile)
     return vars
