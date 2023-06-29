@@ -11,21 +11,30 @@ import json
 
 class Daylight:
 
-    # def __init__(self, vars):
     def __init__(self, *args):
-        self.currHour = datetime.now().hour
-        self.minHour = args[0]
-        self.maxHour = args[1]
-        # self.var = vars
+        self.currTime = datetime.now()
+        self.minTime = self.currTime.replace(
+            hour=int(args[0].split(":")[0]),
+            minute=int(args[0].split(":")[1]),
+            second=int(args[0].split(":")[2])
+            )
+        self.maxTime = self.currTime.replace(
+            hour=int(args[1].split(":")[0]),
+            minute=int(args[1].split(":")[1]),
+            second=int(args[1].split(":")[2])
+            )
+        # print(self.minTime)
+        # print(self.maxTime)
+        # print(self.currTime)
 
     def daylightHour(self):
-        if self.currHour < self.minHour:
-            logger.file(f"\tToo early morning: { self.currHour } o'clock. We're starting at "+
-                        f"{ self.minHour } o'clock.")
+        if self.currTime < self.minTime:
+            logger.file(f"\tToo early morning: { self.currTime } o'clock. We're starting at "+
+                        f"{ self.minTime } o'clock.")
             return False
-        if self.currHour > self.maxHour:
-            logger.file(f"\tToo late for sunshine: { self.currHour } o'clock. Let's wait till "+
-                        f"tomorrow { self.minHour } o'clock.")
+        if self.currTime > self.maxTime:
+            logger.file(f"\tToo late for sunshine: { self.currTime } o'clock. Let's wait till "+
+                        f"tomorrow { self.minTime } o'clock.")
             return False
         logger.file("\tWe are at correct phase of the day: OK.")
         return True

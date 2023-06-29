@@ -96,8 +96,8 @@ min_battery: 95
 # self.maxDayHour = 18
 # Time frame between the two hours in a day when it is considering daylight.
 # Necessary-insufficient condition.
-min_day_hour: 9
-max_day_hour: 18
+min_day_time: "09:00:00"
+max_day_time: "18:00:00"
 
 
 # self.maxGridDraw = 40

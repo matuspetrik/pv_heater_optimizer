@@ -26,10 +26,10 @@ def main():
     fcastThread = forecast.FcastThreading(vars, initRun)
     fcastThread.start()
 
-    d = vcapi.getPortalData(vars)
     f = forecast.HourlyFileHandle(vars)
 
     while True:
+        d = vcapi.getPortalData(vars)
         if not initRun:
             logger.file(f"==== FULL LOOP END:: {datetime.now()} ====")
             sleep(vars.sleepTimer)
@@ -43,7 +43,7 @@ def main():
 
         # Daylight hours verification
         logger.file("Daylight hours verification:")
-        daytime = forecast.Daylight(vars.minDayHour, vars.maxDayHour)
+        daytime = forecast.Daylight(vars.minDayTime, vars.maxDayTime)
         if not daytime.daylightHour():
             heatingFlag = False
             continue
@@ -91,33 +91,33 @@ def main():
             abs(battery.power("bp")) > vars.maxBatteryDraw or \
             battery.state("bst") == "discharging":
                 # drawing more than limit from battery
-                logger.file(f"\servo decrease")
                 vars.pwrPcnt = vars.pwrPcnt - vars.adjust
                 if vars.pwrPcnt < 0: vars.pwrPcnt = 0
-                print(vars.pwrPcnt)
+                # print(vars.pwrPcnt)
+                logger.file(f"\servo decrease to: { vars.pwrPcnt }%")
                 with rpigpio.ServoControl(pin=servoPin) as sc:
                     sc.rotateServo(vars.pwrPcnt)
                 del sc
             elif dayForecastDict["data"][hour] - pvPower > vars.tolerateRange:
                     # can draw more power from PV
-                    logger.file(f"\servo increase")
                     vars.pwrPcnt = vars.pwrPcnt + vars.adjust
                     if vars.pwrPcnt > 100: vars.pwrPcnt = 100
-                    print(vars.pwrPcnt)
+                    # print(vars.pwrPcnt)
+                    logger.file(f"\servo increase to: { vars.pwrPcnt }%")
                     with rpigpio.ServoControl(pin=servoPin) as sc:
                         sc.rotateServo(vars.pwrPcnt)
                     del sc
             else:
-                print("All settled. Doing nothing.")
+                logger.file("All settled. Doing nothing.")
         else:
             # enough spare PV power and heater is off
-            print(f"Forecast for { hour } o'clock: { dayForecastDict['data'][hour] }")
-            print(f"PV Power: { pvPower }")
+            # print(f"\tForecast for { hour } o'clock: { dayForecastDict['data'][hour] }")
+            # print(f"\tPV Power: { pvPower }")
             if dayForecastDict["data"][hour] - pvPower > vars.fcastDiff:
-                print(vars.pwrPcnt)
+                # print(vars.pwrPcnt)
                 logger.file(\
                     f"\tForecast for { hour } o'clock: { dayForecastDict['data'][hour] }, "
-                    f"and drawing only { pvPower }. Turning heater on.")
+                    f"and drawing only { pvPower }. Turning heater on to: { vars.pwrPcnt }%")
                 heatingFlag = True
                 with rpigpio.RelayControl(pin=relayPin, flag=True) as rc:
                     rc.triggerWorkaround(heatingFlag)
@@ -125,7 +125,7 @@ def main():
                     sc.rotateServo(vars.pwrPcnt)
                 del sc
             else:
-                print("Conditions not met, doing nothing!")
+                logger.file("Conditions not met, doing nothing!")
 
 if __name__ == "__main__":
     try:

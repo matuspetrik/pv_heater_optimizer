@@ -129,8 +129,8 @@ class Variables:
         self.logOutUrl = cfg.logout_url
         self.diagsUrl = cfg.diags_url
         self.minBattery = cfg.min_battery
-        self.minDayHour = cfg.min_day_hour
-        self.maxDayHour = cfg.max_day_hour
+        self.minDayTime = cfg.min_day_time
+        self.maxDayTime = cfg.max_day_time
         self.sleepTimer = cfg.sleep_timer
         self.maxGridDraw = cfg.max_grid_draw
         self.maxBatteryDraw = cfg.max_battery_discharge
@@ -170,9 +170,9 @@ def parseConfig(fileOnly=False):
                         default=os.environ['CONFIG_FILE']
                         )
     args = parser.parse_args()
-    print(f"args: { args.config }")
+    # print(f"args: { args.config }")
     cfgFile = args.config
-    print(cfgFile)
+    # print(cfgFile)
     if fileOnly:
         return cfgFile
     vars = Variables(cfgFile)

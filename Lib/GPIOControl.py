@@ -53,6 +53,14 @@ class RelayControl:
             action = gpio.LOW
         gpio.output(self.pin, action)
 
+    def __del__(self):
+        print("DEL TURN OFF")
+        gpio.setup(self.pin, gpio.OUT)
+        gpio.cleanup(self.pin)
+        # time.sleep(1)
+        gpio.setmode(gpio.BOARD)
+
+
 
 class ServoControl:
 
