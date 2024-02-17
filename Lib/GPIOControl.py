@@ -28,7 +28,7 @@ class RelayControl:
         gpio.setmode(gpio.BOARD)
         if heatingFlag:
             print("TURN ON")
-            # gpio.setmode(gpio.BOARD)
+            gpio.setmode(gpio.BOARD)
             gpio.setup(self.pin, gpio.OUT)
             gpio.output(self.pin, gpio.HIGH)
             # time.sleep(10)
@@ -45,6 +45,9 @@ class RelayControl:
         # Called:
         # with RelayControl(pin=11, flag=False) as relayCtl:
         #     relayCtl.trigger(False)
+        gpio.setwarnings(False)
+        gpio.setmode(gpio.BOARD)
+        gpio.setup(self.pin, gpio.OUT)
         if heatingFlag:
             print("TURN ON")
             action = gpio.HIGH
@@ -53,12 +56,12 @@ class RelayControl:
             action = gpio.LOW
         gpio.output(self.pin, action)
 
-    def __del__(self):
-        print("DEL TURN OFF")
-        gpio.setup(self.pin, gpio.OUT)
-        gpio.cleanup(self.pin)
-        # time.sleep(1)
-        gpio.setmode(gpio.BOARD)
+    #def __del__(self):
+    #    print("DEL TURN OFF")
+    #    gpio.setup(self.pin, gpio.OUT)
+    #    gpio.cleanup(self.pin)
+    #    # time.sleep(1)
+    #    gpio.setmode(gpio.BOARD)
 
 
 
@@ -95,10 +98,10 @@ class ServoControl:
 
 
 # # just for testing
-# # RELAY:
-# with RelayControl(pin=11) as relayCtl:
-#     relayCtl.triggerWorkaround(True)
-#     # relayCtl.trigger(False)
+# RELAY:
+#with RelayControl(pin=11) as relayCtl:
+#    #relayCtl.triggerWorkaround(False)
+#    relayCtl.trigger(False)
 # # SERVO:
 # val = 60
 # with ServoControl(pin=40) as sc:

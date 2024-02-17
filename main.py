@@ -19,7 +19,8 @@ def main():
 
     # init relay to off
     with rpigpio.RelayControl(pin=relayPin) as relayCtl:
-        relayCtl.triggerWorkaround(heatingFlag)
+        #relayCtl.triggerWorkaround(heatingFlag)
+        relayCtl.trigger(heatingFlag)
 
     # Get forecast data for the day by starting
     # a new thread and getting forecast file written
@@ -27,16 +28,17 @@ def main():
     fcastThread.start()
 
     f = forecast.HourlyFileHandle(vars)
+    d = vcapi.getPortalData(vars)
 
     while True:
-        d = vcapi.getPortalData(vars)
         if not initRun:
             logger.file(f"==== FULL LOOP END:: {datetime.now()} ====")
             sleep(vars.sleepTimer)
             if not heatingFlag:
                 vars.pwrPcnt = 50
                 with rpigpio.RelayControl(pin=relayPin) as relayCtl:
-                    relayCtl.triggerWorkaround(heatingFlag)
+                    #relayCtl.triggerWorkaround(heatingFlag)
+                    relayCtl.trigger(heatingFlag)
         initRun = False
         logger.file(f"==== FULL LOOP START:: {datetime.now()} ====")
 
@@ -98,7 +100,7 @@ def main():
                 with rpigpio.ServoControl(pin=servoPin) as sc:
                     sc.rotateServo(vars.pwrPcnt)
                 del sc
-            elif dayForecastDict["data"][hour] - pvPower > vars.tolerateRange:
+            elif dayForecastDict["data"].get(hour,0) - pvPower > vars.tolerateRange:
                     # can draw more power from PV
                     vars.pwrPcnt = vars.pwrPcnt + vars.adjust
                     if vars.pwrPcnt > 100: vars.pwrPcnt = 100
@@ -113,19 +115,20 @@ def main():
             # enough spare PV power and heater is off
             # print(f"\tForecast for { hour } o'clock: { dayForecastDict['data'][hour] }")
             # print(f"\tPV Power: { pvPower }")
-            if dayForecastDict["data"][hour] - pvPower > vars.fcastDiff:
+            if dayForecastDict["data"].get(hour,0) - pvPower > vars.fcastDiff:
                 # print(vars.pwrPcnt)
                 logger.file(\
                     f"\tForecast for { hour } o'clock: { dayForecastDict['data'][hour] }, "
                     f"and drawing only { pvPower }. Turning heater on to: { vars.pwrPcnt }%")
                 heatingFlag = True
                 with rpigpio.RelayControl(pin=relayPin, flag=True) as rc:
-                    rc.triggerWorkaround(heatingFlag)
+                    #rc.triggerWorkaround(heatingFlag)
+                    rc.trigger(heatingFlag)
                 with rpigpio.ServoControl(pin=servoPin) as sc:
                     sc.rotateServo(vars.pwrPcnt)
                 del sc
             else:
-                logger.file("Conditions not met, doing nothing!")
+                logger.file("Sun power too low - conditions not met, doing nothing!")
 
 if __name__ == "__main__":
     try:

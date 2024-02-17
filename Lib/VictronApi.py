@@ -63,8 +63,16 @@ class VictronApi:
             try:
                 response = requests.get(self.diagsUrl, headers=self.headers, timeout=self.timeout)
                 # response.raise_for_status()
+                if response.status_code in [401, 403]:
+                    raise ConnectionRefusedError(f"\tToken has timed out. Status code: { response.status_code }.")
                 if response.status_code != 200:
                     raise ConnectionError(f"\tForecast connection status is { response.status_code }.")
+            except ConnectionRefusedError as inst:
+                _res = None
+                msg = f'\tFn: { curFn }:: E: { repr(inst) }:: '
+                logger.file(msg)
+                time.sleep(self.timeout)
+                self.getToken()
             except Exception as inst:
                 _res = None
                 msg = f'\tFn: { curFn }:: E: { repr(inst) }:: '
